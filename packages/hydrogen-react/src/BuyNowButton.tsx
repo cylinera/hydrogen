@@ -28,7 +28,7 @@ type BuyNowButtonProps<AsType extends React.ElementType = 'button'> =
 export function BuyNowButton<AsType extends React.ElementType = 'button'>(
   props: BuyNowButtonProps<AsType>,
 ): JSX.Element {
-  const {cartCreate, checkoutUrl} = useCart();
+  const {cartCreate, checkoutUrl, status} = useCart();
   const [loading, setLoading] = useState<boolean>(false);
 
   const {
@@ -41,10 +41,10 @@ export function BuyNowButton<AsType extends React.ElementType = 'button'>(
   } = props;
 
   useEffect(() => {
-    if (loading && checkoutUrl) {
+    if (loading && checkoutUrl && status === 'idle') {
       window.location.href = checkoutUrl;
     }
-  }, [loading, checkoutUrl]);
+  }, [loading, checkoutUrl, status]);
 
   const handleBuyNow = useCallback(() => {
     setLoading(true);
