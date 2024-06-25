@@ -16,6 +16,11 @@ interface BuyNowButtonPropsBase {
     key: string;
     value: string;
   }[];
+  /** An array of cart attributes. */
+  cartAttributes?: {
+    key: string;
+    value: string;
+  }[];
 }
 
 type BuyNowButtonProps<AsType extends React.ElementType = 'button'> =
@@ -36,6 +41,7 @@ export function BuyNowButton<AsType extends React.ElementType = 'button'>(
     variantId,
     onClick,
     attributes,
+    cartAttributes,
     children,
     ...passthroughProps
   } = props;
@@ -56,8 +62,9 @@ export function BuyNowButton<AsType extends React.ElementType = 'button'>(
           attributes,
         },
       ],
+      attributes: cartAttributes,
     });
-  }, [cartCreate, quantity, variantId, attributes]);
+  }, [cartCreate, quantity, variantId, attributes, cartAttributes]);
 
   return (
     <BaseButton
