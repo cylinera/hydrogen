@@ -8,11 +8,11 @@ export interface CustomBaseButtonProps<AsType> {
   /** Click event handler. Default behaviour triggers unless prevented */
   onClick?: (
     event?: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-  ) => void | boolean;
+  ) => void | boolean | Promise<void | boolean>;
   /** A default `onClick` behavior */
   defaultOnClick?: (
     event?: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-  ) => void | boolean;
+  ) => void | boolean | Promise<void | boolean>;
   /** A `ref` to the underlying button */
   buttonRef?: Ref<HTMLButtonElement>;
 }
@@ -39,9 +39,12 @@ export function BaseButton<AsType extends React.ElementType = 'button'>(
   } = props;
 
   const handleOnClick = useCallback(
-    (event?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    async (event?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
       if (onClick) {
-        const clickShouldContinue = onClick(event);
+        let clickShouldContinue = onClick(event);
+        if (clickShouldContinue instanceof Promise) {
+          clickShouldContinue = await clickShouldContinue;
+        }
         if (
           (typeof clickShouldContinue === 'boolean' &&
             clickShouldContinue === false) ||
@@ -50,7 +53,7 @@ export function BaseButton<AsType extends React.ElementType = 'button'>(
           return;
       }
 
-      defaultOnClick?.(event);
+      void defaultOnClick?.(event);
     },
     [defaultOnClick, onClick],
   );
@@ -58,6 +61,7 @@ export function BaseButton<AsType extends React.ElementType = 'button'>(
   const Component = as || 'button';
 
   return (
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     <Component ref={buttonRef} onClick={handleOnClick} {...passthroughProps}>
       {children}
     </Component>
